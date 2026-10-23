@@ -3,6 +3,7 @@ import re
 from .common import InfoExtractor
 from ..utils import (
     extract_attributes,
+    smuggle_url,
     strip_or_none,
 )
 
@@ -19,6 +20,7 @@ class SkyBaseIE(InfoExtractor):
             account_id = sdc.get('data-account-id') or '6058004172001'
             player_id = sdc.get('data-player-id') or 'RC9PQUaJ6'
             video_url = self.BRIGHTCOVE_URL_TEMPLATE % (account_id, player_id, video_id)
+            video_url = smuggle_url(video_url, {'referrer': url})
             ie_key = 'BrightcoveNew'
 
         return {
@@ -42,7 +44,7 @@ class SkyBaseIE(InfoExtractor):
 
 class SkySportsIE(SkyBaseIE):
     IE_NAME = 'sky:sports'
-    _VALID_URL = r'https?://(?:www\.)?skysports\.com/watch/video/([^/]+/)*(?P<id>[0-9]+)'
+    _VALID_URL = r'https?://(?:www\.)?skysports\.com/(?:[^/]+/)*video/(?:[^/]+/)*(?P<id>[0-9]+)'
     _TESTS = [{
         'url': 'http://www.skysports.com/watch/video/10328419/bale-its-our-time-to-shine',
         'md5': '77d59166cddc8d3cb7b13e35eaf0f5ec',
@@ -58,6 +60,9 @@ class SkySportsIE(SkyBaseIE):
         'only_matching': True,
     }, {
         'url': 'https://www.skysports.com/watch/video/tv-shows/12118508/rainford-brent-how-ace-programme-helps',
+        'only_matching': True,
+    }, {
+        'url': 'https://www.skysports.com/darts/video/13584649',
         'only_matching': True,
     }]
 
